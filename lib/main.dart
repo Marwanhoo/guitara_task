@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:guitara_task/contact_screen.dart';
+import 'package:guitara_task/my_home_page.dart';
 import 'package:stream_video_flutter/stream_video_flutter.dart';
 
 void main() {
@@ -15,7 +16,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,115 +30,6 @@ class MyApp extends StatelessWidget {
 }
 
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Go Stream"),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text('Create Call'),
-          onPressed: () async {
-            try {
-              var call = StreamVideo.instance.makeCall(
-                callType: StreamCallType(),
-                id: '9YyK7GISk1WJ',
-              );
-
-              await call.getOrCreate();
-
-              // Created ahead
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CallScreen(call: call),
-                ),
-              );
-            } catch (e) {
-              debugPrint('Error joining or creating call: $e');
-              debugPrint(e.toString());
-            }
-          },
-        )
-      ),
-    );
-  }
-}
 
 
-class CallScreen extends StatefulWidget {
-  final Call call;
 
-  const CallScreen({
-    Key? key,
-    required this.call,
-  }) : super(key: key);
-
-  @override
-  State<CallScreen> createState() => _CallScreenState();
-}
-
-class _CallScreenState extends State<CallScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamCallContainer(
-        call: widget.call,
-        callContentBuilder: (
-            BuildContext context,
-            Call call,
-            CallState callState,
-            ) {
-          return StreamCallContent(
-            call: call,
-            callState: callState,
-            callControlsBuilder: (
-                BuildContext context,
-                Call call,
-                CallState callState,
-                ) {
-              final localParticipant = callState.localParticipant!;
-              return StreamCallControls(
-                options: [
-                  CallControlOption(
-                    icon: const Icon(Icons.chat_outlined),
-                    onPressed: () {
-                      // Open your chat window
-                    },
-                  ),
-                  FlipCameraOption(
-                    call: call,
-                    localParticipant: localParticipant,
-                  ),
-                  AddReactionOption(
-                    call: call,
-                    localParticipant: localParticipant,
-                  ),
-                  ToggleMicrophoneOption(
-                    call: call,
-                    localParticipant: localParticipant,
-                  ),
-                  ToggleCameraOption(
-                    call: call,
-                    localParticipant: localParticipant,
-                  ),
-                  LeaveCallOption(
-                    call: call,
-                    onLeaveCallTap: () {
-                      call.leave();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
